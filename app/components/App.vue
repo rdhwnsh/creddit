@@ -5,10 +5,12 @@
         <Scrollview>
 
             <StackLayout>
-                <!-- <Label class="message"> Hey there </Label> -->
+                <Label class="message"> {{taptimes}} / 25 </Label>
                 <TextField v-model="subreddit" hint="Enter a subreddit" @input="getSubreddit"></TextField>
                 <button @tap="getSubreddit">Get subreddit list</button>
-                <button @tap="coolbutton">{{getnextpost}}</button>
+                <button @tap="nextpost">{{getnextpost}}</button>
+                <button @tap="previouspost">{{getpreviouspost}}</button>
+
 
                 <!-- <Label class="message bold" textWrap="true">Displaying posts from {{subreddit}} </Label> -->
 
@@ -40,32 +42,52 @@
                 subreddit: "todayilearned",
                 title: "",
                 img: "",
-                getnextpost: "Press the button above first!"
+                getnextpost: "Press the button above first!",
+                getpreviouspost: "Press the button above first!", 
             }
         },
         methods: {
-            coolbutton() {
+            nextpost() {
                 this.taptimes++;
                 this.usernameDisplay = "/u/" + this.data[this.taptimes].data.author
                 this.title = this.data[this.taptimes].data.title
                 this.img = this.data[this.taptimes].data.thumbnail
 
                 if (this.taptimes >= 24) {
-                    this.taptimes = 0;
+                    this.taptimes = 1;
                 }
 
+                console.log(this.taptimes);
             },
+
+            previouspost(){
+                this.taptimes--;
+                this.usernameDisplay = "/u/" + this.data[this.taptimes].data.author
+                this.title = this.data[this.taptimes].data.title
+                this.img = this.data[this.taptimes].data.thumbnail
+
+                if (this.taptimes <= 1) {
+                    this.taptimes = 1;
+                }
+
+                console.log(this.taptimes);
+                
+            },
+            
             getSubreddit() {
                 fetch("https://www.reddit.com/r/" + this.subreddit + ".json")
                     .then(response => response.json())
                     .then(json => {
                         this.data = json.data.children
                         this.getnextpost = "Get next post"
+                        this.getpreviouspost = "get previous post"
 
                         this.taptimes++;
                         this.usernameDisplay = "/u/" + this.data[this.taptimes].data.author
                         this.title = this.data[this.taptimes].data.title
                         this.img = this.data[this.taptimes].data.thumbnail
+
+                        var doneToast = Toast.makeText("Done getting subreddit").show();
                     })
             }
         },
@@ -73,10 +95,13 @@
         created() {
             var welcometoast = Toast.makeText("Welcome!").show();
             fetch("https://www.reddit.com/r/" + this.subreddit + ".json")
-                .then(response => response.json())
+                .then(response => {
+                    response.json()
+                })
                 .then(json => {
                     this.data = json.data.children
                     this.getnextpost = "Get next post"
+                    this.getpreviouspost = "get previous post"
 
                     this.taptimes++;
                     this.usernameDisplay = "/u/" + this.data[this.taptimes].data.author

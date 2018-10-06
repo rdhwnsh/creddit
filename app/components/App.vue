@@ -15,8 +15,8 @@
                 <!-- <Label class="message bold" textWrap="true">Displaying posts from {{subreddit}} </Label> -->
 
 
+                <Image class="img-rounded" :src="img" />
                 <Label class="message bold" textWrap="true">{{title}} </Label>
-                <Image :src="img" />
                 <Label class="message" textWrap="true">{{usernameDisplay}} </Label>
 
             </StackLayout>
@@ -37,43 +37,42 @@
             return {
                 usernameDisplay: "",
                 taptimes: 0,
-                apptitle: "dev.bynabil.testingapp",
+                apptitle: "dev.bynabil.nativescript-reddit",
                 data: [],
                 subreddit: "todayilearned",
                 title: "",
                 img: "",
                 getnextpost: "Press the button above first!",
-                getpreviouspost: "Press the button above first!", 
+                getpreviouspost: "Press the button above first!",
             }
         },
         methods: {
             nextpost() {
                 this.taptimes++;
-                this.usernameDisplay = "/u/" + this.data[this.taptimes].data.author
-                this.title = this.data[this.taptimes].data.title
-                this.img = this.data[this.taptimes].data.thumbnail
 
-                if (this.taptimes >= 24) {
-                    this.taptimes = 1;
+                if (this.taptimes >= 25 || this.taptimes <= 0) {
+                    this.taptimes = 0;
                 }
+                    this.usernameDisplay = "/u/" + this.data[this.taptimes].data.author
+                    this.title = this.data[this.taptimes].data.title
+                    this.img = this.data[this.taptimes].data.thumbnail
 
                 console.log(this.taptimes);
             },
 
-            previouspost(){
+            previouspost() {
                 this.taptimes--;
-                this.usernameDisplay = "/u/" + this.data[this.taptimes].data.author
-                this.title = this.data[this.taptimes].data.title
-                this.img = this.data[this.taptimes].data.thumbnail
-
-                if (this.taptimes <= 1) {
-                    this.taptimes = 1;
+                if (this.taptimes >= 25 || this.taptimes <= 0) {
+                    this.taptimes = 0;
                 }
+                    this.usernameDisplay = "/u/" + this.data[this.taptimes].data.author
+                    this.title = this.data[this.taptimes].data.title
+                    this.img = this.data[this.taptimes].data.thumbnail
 
                 console.log(this.taptimes);
-                
+
             },
-            
+
             getSubreddit() {
                 fetch("https://www.reddit.com/r/" + this.subreddit + ".json")
                     .then(response => response.json())
@@ -114,8 +113,13 @@
 </script>
 
 <style scoped>
+    StackLayout {
+        width: 90%;
+        height: 90%;
+    }
+
     ActionBar {
-        background-color: #53ba82;
+        background-color: #ba5353;
         color: #ffffff;
     }
 
@@ -126,7 +130,7 @@
     }
 
     button {
-        background-color: #53ba82;
+        background-color: #ba5353;
         color: #ffffff;
     }
 

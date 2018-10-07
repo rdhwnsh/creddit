@@ -195,7 +195,7 @@ var Toast = __webpack_require__("../node_modules/nativescript-toast/toast.js");
     return {
       usernameDisplay: "",
       taptimes: 0,
-      apptitle: "dev.bynabil.nativescript-reddit",
+      apptitle: "creddit",
       data: [],
       subreddit: "todayilearned",
       title: "",
@@ -233,11 +233,11 @@ var Toast = __webpack_require__("../node_modules/nativescript-toast/toast.js");
     },
 
     getSubreddit() {
-      fetch("https://www.reddit.com/r/" + this.subreddit + ".json").then(response => response.json()).then(json => {
+      fetch("https://www.reddit.com/r/" + this.subreddit + "/new.json").then(response => response.json()).then(json => {
         this.data = json.data.children;
         this.getnextpost = "Get next post";
         this.getpreviouspost = "get previous post";
-        this.taptimes++;
+        this.taptimes = 0;
         this.usernameDisplay = "/u/" + this.data[this.taptimes].data.author;
         this.title = this.data[this.taptimes].data.title;
         this.img = this.data[this.taptimes].data.thumbnail;
@@ -274,7 +274,7 @@ exports = module.exports = __webpack_require__("../node_modules/css-loader/lib/c
 
 
 // module
-exports.push([module.i, "\nStackLayout[data-v-45ba5ed4] {\n    width: 90%;\n    height: 90%;\n}\nActionBar[data-v-45ba5ed4] {\n    background-color: #ba5353;\n    color: #ffffff;\n}\n.message[data-v-45ba5ed4] {\n    /* text-align: center; */\n    font-size: 20;\n    color: #333333;\n}\nbutton[data-v-45ba5ed4] {\n    background-color: #ba5353;\n    color: #ffffff;\n}\nImage[data-v-45ba5ed4] {\n    width: 200;\n    align-items: left;\n    text-align: left;\n}\n.bold[data-v-45ba5ed4] {\n    font-weight: bold;\n}\n", ""]);
+exports.push([module.i, "\nStackLayout[data-v-45ba5ed4] {\n    width: 90%;\n    height: 95%;\n}\nActionBar[data-v-45ba5ed4] {\n    background-color: #ba5353;\n    color: #ffffff;\n}\n.message[data-v-45ba5ed4] {\n    /* text-align: center; */\n    font-size: 20;\n    color: #333333;\n}\nbutton[data-v-45ba5ed4] {\n    background-color: #ba5353;\n    color: #ffffff;\n}\nImage[data-v-45ba5ed4] {\n    width: 40;\n    align-items: left;\n    text-align: left;\n}\n.bold[data-v-45ba5ed4] {\n    font-weight: bold;\n}\n", ""]);
 
 // exports
 
@@ -335,19 +335,35 @@ var render = function() {
               _c("button", { on: { tap: _vm.previouspost } }, [
                 _vm._v(_vm._s(_vm.getpreviouspost))
               ]),
-              _c("Image", {
-                staticClass: "img-rounded",
-                attrs: { src: _vm.img }
-              }),
               _c(
-                "Label",
-                { staticClass: "message bold", attrs: { textWrap: "true" } },
-                [_vm._v(_vm._s(_vm.title) + " ")]
-              ),
-              _c(
-                "Label",
-                { staticClass: "message", attrs: { textWrap: "true" } },
-                [_vm._v(_vm._s(_vm.usernameDisplay) + " ")]
+                "ScrollView",
+                { attrs: { orientation: "vertical" } },
+                [
+                  _c(
+                    "StackLayout",
+                    [
+                      _c("Image", {
+                        staticClass: "img-rounded",
+                        attrs: { src: _vm.img }
+                      }),
+                      _c(
+                        "Label",
+                        {
+                          staticClass: "message bold",
+                          attrs: { textWrap: "true" }
+                        },
+                        [_vm._v(_vm._s(_vm.title) + " ")]
+                      ),
+                      _c(
+                        "Label",
+                        { staticClass: "message", attrs: { textWrap: "true" } },
+                        [_vm._v(_vm._s(_vm.usernameDisplay) + " ")]
+                      )
+                    ],
+                    1
+                  )
+                ],
+                1
               )
             ],
             1

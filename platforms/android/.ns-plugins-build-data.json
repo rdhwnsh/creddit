@@ -1,0 +1,9 @@
+{
+	"nativescript-socket.io": {
+		"C:\\Users\\ridhwanshah\\Documents\\GitHub\\creddit\\node_modules\\nativescript-socket.io\\platforms\\android\\include.gradle": "027b30edeb6741f0b8f0c2bbafbfea69ce6ae1e2",
+		"C:\\Users\\ridhwanshah\\Documents\\GitHub\\creddit\\node_modules\\nativescript-socket.io\\platforms\\android\\AndroidManifest.xml": "9741d925308f7277734e46001e8dc12b4e0c2529"
+	},
+	"tns-core-modules-widgets": {
+		"C:\\Users\\ridhwanshah\\Documents\\GitHub\\creddit\\node_modules\\tns-core-modules-widgets\\platforms\\android\\widgets-release.aar": "402875596039fd16198e0e4adbb85e44a4ff148d"
+	}
+}

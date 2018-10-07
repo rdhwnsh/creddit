@@ -14,19 +14,19 @@
 
                 <!-- <Label class="message bold" textWrap="true">Displaying posts from {{subreddit}} </Label> -->
 
+                <ScrollView orientation="vertical">
+                    <StackLayout>
+                        <Image class="img-rounded" :src="img" />
+                        <Label class="message bold" textWrap="true">{{title}} </Label>
+                        <Label class="message" textWrap="true">{{usernameDisplay}} </Label>
+                    </StackLayout>
+                </ScrollView>
 
-                <Image class="img-rounded" :src="img" />
-                <Label class="message bold" textWrap="true">{{title}} </Label>
-                <Label class="message" textWrap="true">{{usernameDisplay}} </Label>
 
             </StackLayout>
-
-            <!-- <GridLayout colums="*" rows="*">
-            <Label class="message" :text="usernameDisplay" col="0" row="0"/>
-        </GridLayout> -->
-
-
         </Scrollview>
+
+
     </Page>
 </template>
 
@@ -37,7 +37,7 @@
             return {
                 usernameDisplay: "",
                 taptimes: 0,
-                apptitle: "dev.bynabil.nativescript-reddit",
+                apptitle: "creddit",
                 data: [],
                 subreddit: "todayilearned",
                 title: "",
@@ -53,9 +53,9 @@
                 if (this.taptimes >= 25 || this.taptimes <= 0) {
                     this.taptimes = 0;
                 }
-                    this.usernameDisplay = "/u/" + this.data[this.taptimes].data.author
-                    this.title = this.data[this.taptimes].data.title
-                    this.img = this.data[this.taptimes].data.thumbnail
+                this.usernameDisplay = "/u/" + this.data[this.taptimes].data.author
+                this.title = this.data[this.taptimes].data.title
+                this.img = this.data[this.taptimes].data.thumbnail
 
                 console.log(this.taptimes);
             },
@@ -65,23 +65,23 @@
                 if (this.taptimes >= 25 || this.taptimes <= 0) {
                     this.taptimes = 0;
                 }
-                    this.usernameDisplay = "/u/" + this.data[this.taptimes].data.author
-                    this.title = this.data[this.taptimes].data.title
-                    this.img = this.data[this.taptimes].data.thumbnail
+                this.usernameDisplay = "/u/" + this.data[this.taptimes].data.author
+                this.title = this.data[this.taptimes].data.title
+                this.img = this.data[this.taptimes].data.thumbnail
 
                 console.log(this.taptimes);
 
             },
 
             getSubreddit() {
-                fetch("https://www.reddit.com/r/" + this.subreddit + ".json")
+                fetch("https://www.reddit.com/r/" + this.subreddit + "/new.json")
                     .then(response => response.json())
                     .then(json => {
                         this.data = json.data.children
                         this.getnextpost = "Get next post"
                         this.getpreviouspost = "get previous post"
 
-                        this.taptimes++;
+                        this.taptimes = 0;
                         this.usernameDisplay = "/u/" + this.data[this.taptimes].data.author
                         this.title = this.data[this.taptimes].data.title
                         this.img = this.data[this.taptimes].data.thumbnail
@@ -115,7 +115,7 @@
 <style scoped>
     StackLayout {
         width: 90%;
-        height: 90%;
+        height: 95%;
     }
 
     ActionBar {
@@ -135,7 +135,7 @@
     }
 
     Image {
-        width: 200;
+        width: 40;
         align-items: left;
         text-align: left;
     }

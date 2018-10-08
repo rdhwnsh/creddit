@@ -1878,7 +1878,7 @@
         <item name="theme">@style/ThemeOverlay.AppCompat.ActionBar</item>
         <item name="popupTheme">@style/ThemeOverlay.AppCompat</item>
     </style><style name="NativeScriptToolbarStyle" parent="NativeScriptToolbarStyleBase">
-    </style></file><file path="C:\Users\ridhwanshah\Documents\GitHub\creddit\platforms\android\app\src\main\res\values-v21\colors.xml" qualifiers="v21"><color name="ns_accent">#ba5353</color></file><file path="C:\Users\ridhwanshah\Documents\GitHub\creddit\platforms\android\app\src\main\res\values-v21\strings.xml" qualifiers="v21"><string name="app_name">ns_reddit</string><string name="title_activity_kimera">ns_reddit</string></file><file path="C:\Users\ridhwanshah\Documents\GitHub\creddit\platforms\android\app\src\main\res\values-v21\styles.xml" qualifiers="v21"><style name="AppTheme" parent="AppThemeBase">
+    </style></file><file path="C:\Users\ridhwanshah\Documents\GitHub\creddit\platforms\android\app\src\main\res\values-v21\colors.xml" qualifiers="v21"><color name="ns_accent">#ba5353</color></file><file path="C:\Users\ridhwanshah\Documents\GitHub\creddit\platforms\android\app\src\main\res\values-v21\strings.xml" qualifiers="v21"><string name="app_name">creddit</string><string name="title_activity_kimera">creddit</string></file><file path="C:\Users\ridhwanshah\Documents\GitHub\creddit\platforms\android\app\src\main\res\values-v21\styles.xml" qualifiers="v21"><style name="AppTheme" parent="AppThemeBase">
         <item name="android:datePickerStyle">@style/SpinnerDatePicker</item>
         <item name="android:timePickerStyle">@style/SpinnerTimePicker</item>
     </style><style name="SpinnerDatePicker" parent="android:Widget.Material.Light.DatePicker">

@@ -1,17 +1,17 @@
 {
-	"time": "Sun Oct 07 2018 20:07:17 GMT+0800 (Malay Peninsula Standard Time)",
+	"time": "Mon Oct 08 2018 11:56:16 GMT+0800 (Malay Peninsula Standard Time)",
 	"nativePlatformStatus": "3",
 	"bundle": true,
 	"release": false,
-	"changesRequireBuild": false,
-	"projectFileHash": "c16fd26414d9482f2eab0380ad14ff72d35608dbe52b5b3a36bba63c982e026e",
-	"changesRequireBuildTime": "Sun Oct 07 2018 19:51:53 GMT+0800 (Malay Peninsula Standard Time)",
+	"changesRequireBuild": true,
+	"projectFileHash": "daa2576709e95187aa2182038b14b03b2c04ee8c1138179148e1460986826532",
+	"changesRequireBuildTime": "Mon Oct 08 2018 11:56:16 GMT+0800 (Malay Peninsula Standard Time)",
 	"appFilesHashes": {
 		"C:\\Users\\ridhwanshah\\Documents\\GitHub\\creddit\\app\\fonts\\.gitkeep": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
 		"C:\\Users\\ridhwanshah\\Documents\\GitHub\\creddit\\app\\app.scss": "e412ad423c405c090214c07ec11854e572957c75",
-		"C:\\Users\\ridhwanshah\\Documents\\GitHub\\creddit\\app\\components\\App.vue": "1a15fc44d41d388eef4267d97abb4344a60766b1",
 		"C:\\Users\\ridhwanshah\\Documents\\GitHub\\creddit\\app\\assets\\images\\NativeScript-Vue.png": "31f09bdba72293198ee2e2a83c4fe5aa5744bc3d",
-		"C:\\Users\\ridhwanshah\\Documents\\GitHub\\creddit\\app\\main.js": "c41860f2a8f91d86610c2f1582dde1745fe59c87",
-		"C:\\Users\\ridhwanshah\\Documents\\GitHub\\creddit\\app\\package.json": "41ab92c54cb3e3a55dc8c38b4d7c0574de154ca1"
+		"C:\\Users\\ridhwanshah\\Documents\\GitHub\\creddit\\app\\components\\App.vue": "b95997e0b094226f55a8284f466c7c2500cad3f5",
+		"C:\\Users\\ridhwanshah\\Documents\\GitHub\\creddit\\app\\package.json": "41ab92c54cb3e3a55dc8c38b4d7c0574de154ca1",
+		"C:\\Users\\ridhwanshah\\Documents\\GitHub\\creddit\\app\\main.js": "516c7b1a41f159750839c8b0a01d610a8ca353c9"
 	}
 }

@@ -3,25 +3,36 @@
         <ActionBar :title="apptitle" />
 
         <Scrollview>
-
             <StackLayout>
-                <Label class="message"> {{taptimes}} / 25 </Label>
-                <TextField v-model="subreddit" hint="Enter a subreddit" @input="getSubreddit"></TextField>
-                <button @tap="getSubreddit">Get subreddit list</button>
-                <button @tap="nextpost">{{getnextpost}}</button>
-                <button @tap="previouspost">{{getpreviouspost}}</button>
 
+
+
+                <!-- SHOWS WHICH PAGE -->
+                <Label class="message"> {{page}} / 24 </Label>
+
+                <!-- INPUT FOR ENTERING SUBREDDIT -->
+                <TextField v-model="subreddit" hint="Enter a subreddit" @textChange="getSubreddit"></TextField>
+
+                <!-- NEXT POST AND PREVIOUS POST BUTTONS -->
+                <button @tap="nextpost"> Next </button>
+                <button @tap="previouspost"> Previous </button>
 
                 <!-- <Label class="message bold" textWrap="true">Displaying posts from {{subreddit}} </Label> -->
 
-                <ScrollView orientation="vertical">
-                    <StackLayout>
-                        <Image class="img-rounded" :src="img" />
-                        <Label class="message bold" textWrap="true">{{title}} </Label>
-                        <Label class="message" textWrap="true">{{usernameDisplay}} </Label>
-                    </StackLayout>
-                </ScrollView>
+                <PullToRefresh @refresh="refreshList">
+                    <!-- VIEW SUBREDDIT -->
+                    <ScrollView orientation="vertical">
+                        <StackLayout>
+                            <Image class="img-rounded" :src="img" />
 
+                            <!-- CALL OPENPOST WHEN THE TITLE IS CLICKED -->
+                            <Label class="message bold" textWrap="true" @tap="openpost" >{{title}} </Label>
+                            <Label class="message" textWrap="true">{{usernameDisplay}} </Label>
+                        </StackLayout>
+                    </ScrollView>
+
+
+                </PullToRefresh>
 
             </StackLayout>
         </Scrollview>
@@ -32,81 +43,117 @@
 
 <script>
     var Toast = require("nativescript-toast")
+    import {
+        registerElement
+    } from "nativescript-pulltorefresh";
+
+    var utilityModule = require("utils/utils");
+
     export default {
         data() {
             return {
                 usernameDisplay: "",
-                taptimes: 0,
-                apptitle: "creddit",
+                page: 0,
+                apptitle: "☝️ creddit",
                 data: [],
                 subreddit: "todayilearned",
                 title: "",
                 img: "",
-                getnextpost: "Press the button above first!",
-                getpreviouspost: "Press the button above first!",
             }
         },
         methods: {
+
+            // GOTO NExT POST
             nextpost() {
-                this.taptimes++;
 
-                if (this.taptimes >= 25 || this.taptimes <= 0) {
-                    this.taptimes = 0;
+                // PAGE WILL INCREMENT
+                this.page++;
+
+                // IF PAGE IS ABOVE 25 OR BELOW 0, PAGE WILL TURN BACK TO PAGE 0 (TO PREVENT APP CRASHING)
+                if (this.page >= 25 || this.page <= 0) {
+                    this.page = 0;
                 }
-                this.usernameDisplay = "/u/" + this.data[this.taptimes].data.author
-                this.title = this.data[this.taptimes].data.title
-                this.img = this.data[this.taptimes].data.thumbnail
 
-                console.log(this.taptimes);
+                // SAVE USERNAME, TITLE AND IMAGE VARIABLE
+                this.usernameDisplay = "/u/" + this.data[this.page].data.author
+                this.title = this.data[this.page].data.title
+                this.img = this.data[this.page].data.thumbnail
+
+                // CONSOLE.LOG THE PAGE NUMBER
+                console.log(this.page);
             },
 
+            // GOTO PREVIOUS POST
             previouspost() {
-                this.taptimes--;
-                if (this.taptimes >= 25 || this.taptimes <= 0) {
-                    this.taptimes = 0;
-                }
-                this.usernameDisplay = "/u/" + this.data[this.taptimes].data.author
-                this.title = this.data[this.taptimes].data.title
-                this.img = this.data[this.taptimes].data.thumbnail
 
-                console.log(this.taptimes);
+                // PAGE WILL DECREMENT
+
+                // IF PAGE IS ABOVE 25 OR BELOW 0, PAGE WILL TURN BACK TO PAGE 0 (TO PREVENT APP CRASHING)
+                if (this.page >= 25) {
+                    this.page = 0;
+
+                } else if (this.page > 0) {
+                    this.page--;
+
+                } else if (this.page <= 0) {
+                    this.page = 24;
+                }
+
+                // SAVE USERNAME, TITLE AND IMAGE VARIABLE
+                this.usernameDisplay = "/u/" + this.data[this.page].data.author
+                this.title = this.data[this.page].data.title
+                this.img = this.data[this.page].data.thumbnail
+
+                // CONSOLE.LOG THE PAGE NUMBER
+                console.log(this.page);
 
             },
 
+            // GET SUBREDDIT DATA
             getSubreddit() {
                 fetch("https://www.reddit.com/r/" + this.subreddit + "/new.json")
                     .then(response => response.json())
                     .then(json => {
+
+                        // SAVE DATA TO DATA VARIABLE                        
                         this.data = json.data.children
-                        this.getnextpost = "Get next post"
-                        this.getpreviouspost = "get previous post"
 
-                        this.taptimes = 0;
-                        this.usernameDisplay = "/u/" + this.data[this.taptimes].data.author
-                        this.title = this.data[this.taptimes].data.title
-                        this.img = this.data[this.taptimes].data.thumbnail
+                        // TURNS TO PAGE O
+                        this.page = 0;
 
-                        var doneToast = Toast.makeText("Done getting subreddit").show();
+                        // SAVE THE DATA TO VARIABLE
+                        this.usernameDisplay = "/u/" + this.data[this.page].data.author
+                        this.title = this.data[this.page].data.title
+                        this.img = this.data[this.page].data.thumbnail
                     })
+            },
+
+            // REFRESH LIST
+            refreshList(args) {
+
+                this.getSubreddit()
+
+                var pullRefresh = args.object;
+                setTimeout(function () {
+                    pullRefresh.refreshing = false;
+                }, 1000);
+            },
+
+            // OPENS POST IN BROWSER
+            openpost() {
+
+                // GET THE PERMALINK BY USING THE PAGE NUMBER (INDEX)
+                let permalink = this.data[this.page].data.permalink
+
+                // FULL URL
+                let url = "https://www.reddit.com" + permalink
+                utilityModule.openUrl(url);
             }
         },
 
-        created() {
+        mounted() {
             var welcometoast = Toast.makeText("Welcome!").show();
-            fetch("https://www.reddit.com/r/" + this.subreddit + ".json")
-                .then(response => {
-                    response.json()
-                })
-                .then(json => {
-                    this.data = json.data.children
-                    this.getnextpost = "Get next post"
-                    this.getpreviouspost = "get previous post"
-
-                    this.taptimes++;
-                    this.usernameDisplay = "/u/" + this.data[this.taptimes].data.author
-                    this.title = this.data[this.taptimes].data.title
-                    this.img = this.data[this.taptimes].data.thumbnail
-                })
+            this.getSubreddit();
         }
 
     }
@@ -119,8 +166,8 @@
     }
 
     ActionBar {
-        background-color: #ba5353;
-        color: #ffffff;
+        background-color: #ffcdd2;
+        color: #000000;
     }
 
     .message {
@@ -130,14 +177,15 @@
     }
 
     button {
-        background-color: #ba5353;
-        color: #ffffff;
+        background-color: #b2dfdb;
+        color: #000;
     }
 
     Image {
-        width: 40;
-        align-items: left;
+        horizontal-align: left;
         text-align: left;
+        vertical-align: left;
+        width: 100;
     }
 
     .bold {

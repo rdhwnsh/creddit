@@ -23122,6 +23122,173 @@ module.exports = function (loadModuleFn) {
 
 /***/ }),
 
+/***/ "../node_modules/nativescript-pulltorefresh/pulltorefresh-common.js":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+function __export(m) {
+  for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var content_view_1 = __webpack_require__("../node_modules/tns-core-modules/ui/content-view/content-view.js");
+
+var view_1 = __webpack_require__("../node_modules/tns-core-modules/ui/core/view/view.js");
+
+__export(__webpack_require__("../node_modules/tns-core-modules/ui/content-view/content-view.js"));
+
+var PullToRefreshBase = function (_super) {
+  __extends(PullToRefreshBase, _super);
+
+  function PullToRefreshBase() {
+    return _super !== null && _super.apply(this, arguments) || this;
+  }
+
+  PullToRefreshBase.prototype._addChildFromBuilder = function (name, value) {
+    var originalColor = value.style.color || null;
+    var originaBackgroundColor = value.style.backgroundColor || null;
+
+    if (value instanceof view_1.View) {
+      this.content = value;
+    }
+
+    value.style.color = originalColor;
+    value.style.backgroundColor = originaBackgroundColor;
+  };
+
+  PullToRefreshBase.refreshEvent = "refresh";
+  return PullToRefreshBase;
+}(content_view_1.ContentView);
+
+exports.PullToRefreshBase = PullToRefreshBase;
+exports.refreshingProperty = new view_1.Property({
+  name: "refreshing",
+  defaultValue: false
+});
+exports.refreshingProperty.register(PullToRefreshBase);
+
+/***/ }),
+
+/***/ "../node_modules/nativescript-pulltorefresh/pulltorefresh.js":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(global) {
+
+function __export(m) {
+  for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var color_1 = __webpack_require__("../node_modules/tns-core-modules/color/color.js");
+
+var pulltorefresh_common_1 = __webpack_require__("../node_modules/nativescript-pulltorefresh/pulltorefresh-common.js");
+
+__export(__webpack_require__("../node_modules/nativescript-pulltorefresh/pulltorefresh-common.js"));
+
+var PullToRefresh = function (_super) {
+  __extends(PullToRefresh, _super);
+
+  function PullToRefresh() {
+    return _super !== null && _super.apply(this, arguments) || this;
+  }
+
+  Object.defineProperty(PullToRefresh.prototype, "android", {
+    get: function get() {
+      return this.nativeView;
+    },
+    enumerable: true,
+    configurable: true
+  });
+
+  PullToRefresh.prototype.createNativeView = function () {
+    var swipeRefreshLayout = new android.support.v4.widget.SwipeRefreshLayout(this._context);
+
+    if (!this._androidViewId) {
+      this._androidViewId = android.view.View.generateViewId();
+    }
+
+    swipeRefreshLayout.setId(this._androidViewId);
+    var refreshListener = new TNS_SwipeRefreshListener(new WeakRef(this));
+    swipeRefreshLayout.setOnRefreshListener(refreshListener);
+    swipeRefreshLayout.refreshListener = refreshListener;
+    return swipeRefreshLayout;
+  };
+
+  PullToRefresh.prototype.initNativeView = function () {
+    _super.prototype.initNativeView.call(this);
+
+    var nativeView = this.nativeView;
+    nativeView.refreshListener.owner = new WeakRef(this);
+  };
+
+  PullToRefresh.prototype.disposeNativeView = function () {
+    var nativeView = this.nativeView;
+    nativeView.refreshListener.owner = null;
+
+    _super.prototype.disposeNativeView.call(this);
+  };
+
+  PullToRefresh.prototype[pulltorefresh_common_1.refreshingProperty.getDefault] = function () {
+    return false;
+  };
+
+  PullToRefresh.prototype[pulltorefresh_common_1.refreshingProperty.setNative] = function (value) {
+    this.nativeView.setRefreshing(value);
+  };
+
+  PullToRefresh.prototype[pulltorefresh_common_1.colorProperty.setNative] = function (value) {
+    var color = value instanceof color_1.Color ? value.android : value;
+    this.nativeView.setColorSchemeColors([color]);
+  };
+
+  PullToRefresh.prototype[pulltorefresh_common_1.backgroundColorProperty.setNative] = function (value) {
+    var color = value instanceof color_1.Color ? value.android : value;
+    this.nativeView.setProgressBackgroundColorSchemeColor(color);
+  };
+
+  return PullToRefresh;
+}(pulltorefresh_common_1.PullToRefreshBase);
+
+exports.PullToRefresh = PullToRefresh;
+
+var TNS_SwipeRefreshListener = function (_super) {
+  __extends(TNS_SwipeRefreshListener, _super);
+
+  function TNS_SwipeRefreshListener(owner) {
+    var _this = _super.call(this) || this;
+
+    _this.owner = owner;
+    return global.__native(_this);
+  }
+
+  TNS_SwipeRefreshListener.prototype.onRefresh = function (v) {
+    var owner = this.owner.get();
+
+    if (owner) {
+      owner.refreshing = true;
+      owner.notify({
+        eventName: pulltorefresh_common_1.PullToRefreshBase.refreshEvent,
+        object: owner
+      });
+    }
+  };
+
+  TNS_SwipeRefreshListener = __decorate([Interfaces([android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener])], TNS_SwipeRefreshListener);
+  return TNS_SwipeRefreshListener;
+}(java.lang.Object);
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__("../node_modules/webpack/buildin/global.js")))
+
+/***/ }),
+
 /***/ "../node_modules/nativescript-socket.io/helpers.js":
 /***/ (function(module, exports, __webpack_require__) {
 

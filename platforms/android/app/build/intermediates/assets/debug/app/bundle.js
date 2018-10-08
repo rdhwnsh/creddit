@@ -156,6 +156,19 @@ module.exports =
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var nativescript_pulltorefresh__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("../node_modules/nativescript-pulltorefresh/pulltorefresh.js");
+/* harmony import */ var nativescript_pulltorefresh__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(nativescript_pulltorefresh__WEBPACK_IMPORTED_MODULE_0__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -190,76 +203,98 @@ __webpack_require__.r(__webpack_exports__);
 //
 var Toast = __webpack_require__("../node_modules/nativescript-toast/toast.js");
 
+
+
+var utilityModule = __webpack_require__("../node_modules/tns-core-modules/utils/utils.js");
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   data() {
     return {
       usernameDisplay: "",
-      taptimes: 0,
-      apptitle: "creddit",
+      page: 0,
+      apptitle: "☝️ creddit",
       data: [],
       subreddit: "todayilearned",
       title: "",
-      img: "",
-      getnextpost: "Press the button above first!",
-      getpreviouspost: "Press the button above first!"
+      img: ""
     };
   },
 
   methods: {
+    // GOTO NExT POST
     nextpost() {
-      this.taptimes++;
+      // PAGE WILL INCREMENT
+      this.page++; // IF PAGE IS ABOVE 25 OR BELOW 0, PAGE WILL TURN BACK TO PAGE 0 (TO PREVENT APP CRASHING)
 
-      if (this.taptimes >= 25 || this.taptimes <= 0) {
-        this.taptimes = 0;
-      }
+      if (this.page >= 25 || this.page <= 0) {
+        this.page = 0;
+      } // SAVE USERNAME, TITLE AND IMAGE VARIABLE
 
-      this.usernameDisplay = "/u/" + this.data[this.taptimes].data.author;
-      this.title = this.data[this.taptimes].data.title;
-      this.img = this.data[this.taptimes].data.thumbnail;
-      console.log(this.taptimes);
+
+      this.usernameDisplay = "/u/" + this.data[this.page].data.author;
+      this.title = this.data[this.page].data.title;
+      this.img = this.data[this.page].data.thumbnail; // CONSOLE.LOG THE PAGE NUMBER
+
+      console.log(this.page);
     },
 
+    // GOTO PREVIOUS POST
     previouspost() {
-      this.taptimes--;
+      // PAGE WILL DECREMENT
+      // IF PAGE IS ABOVE 25 OR BELOW 0, PAGE WILL TURN BACK TO PAGE 0 (TO PREVENT APP CRASHING)
+      if (this.page >= 25) {
+        this.page = 0;
+      } else if (this.page > 0) {
+        this.page--;
+      } else if (this.page <= 0) {
+        this.page = 24;
+      } // SAVE USERNAME, TITLE AND IMAGE VARIABLE
 
-      if (this.taptimes >= 25 || this.taptimes <= 0) {
-        this.taptimes = 0;
-      }
 
-      this.usernameDisplay = "/u/" + this.data[this.taptimes].data.author;
-      this.title = this.data[this.taptimes].data.title;
-      this.img = this.data[this.taptimes].data.thumbnail;
-      console.log(this.taptimes);
+      this.usernameDisplay = "/u/" + this.data[this.page].data.author;
+      this.title = this.data[this.page].data.title;
+      this.img = this.data[this.page].data.thumbnail; // CONSOLE.LOG THE PAGE NUMBER
+
+      console.log(this.page);
     },
 
+    // GET SUBREDDIT DATA
     getSubreddit() {
       fetch("https://www.reddit.com/r/" + this.subreddit + "/new.json").then(response => response.json()).then(json => {
-        this.data = json.data.children;
-        this.getnextpost = "Get next post";
-        this.getpreviouspost = "get previous post";
-        this.taptimes = 0;
-        this.usernameDisplay = "/u/" + this.data[this.taptimes].data.author;
-        this.title = this.data[this.taptimes].data.title;
-        this.img = this.data[this.taptimes].data.thumbnail;
-        var doneToast = Toast.makeText("Done getting subreddit").show();
+        // SAVE DATA TO DATA VARIABLE                        
+        this.data = json.data.children; // TURNS TO PAGE O
+
+        this.page = 0; // SAVE THE DATA TO VARIABLE
+
+        this.usernameDisplay = "/u/" + this.data[this.page].data.author;
+        this.title = this.data[this.page].data.title;
+        this.img = this.data[this.page].data.thumbnail;
       });
+    },
+
+    // REFRESH LIST
+    refreshList(args) {
+      this.getSubreddit();
+      var pullRefresh = args.object;
+      setTimeout(function () {
+        pullRefresh.refreshing = false;
+      }, 1000);
+    },
+
+    // OPENS POST IN BROWSER
+    openpost() {
+      // GET THE PERMALINK BY USING THE PAGE NUMBER (INDEX)
+      let permalink = this.data[this.page].data.permalink; // FULL URL
+
+      let url = "https://www.reddit.com" + permalink;
+      utilityModule.openUrl(url);
     }
 
   },
 
-  created() {
+  mounted() {
     var welcometoast = Toast.makeText("Welcome!").show();
-    fetch("https://www.reddit.com/r/" + this.subreddit + ".json").then(response => {
-      response.json();
-    }).then(json => {
-      this.data = json.data.children;
-      this.getnextpost = "Get next post";
-      this.getpreviouspost = "get previous post";
-      this.taptimes++;
-      this.usernameDisplay = "/u/" + this.data[this.taptimes].data.author;
-      this.title = this.data[this.taptimes].data.title;
-      this.img = this.data[this.taptimes].data.thumbnail;
-    });
+    this.getSubreddit();
   }
 
 });
@@ -274,7 +309,7 @@ exports = module.exports = __webpack_require__("../node_modules/css-loader/lib/c
 
 
 // module
-exports.push([module.i, "\nStackLayout[data-v-45ba5ed4] {\n    width: 90%;\n    height: 95%;\n}\nActionBar[data-v-45ba5ed4] {\n    background-color: #ba5353;\n    color: #ffffff;\n}\n.message[data-v-45ba5ed4] {\n    /* text-align: center; */\n    font-size: 20;\n    color: #333333;\n}\nbutton[data-v-45ba5ed4] {\n    background-color: #ba5353;\n    color: #ffffff;\n}\nImage[data-v-45ba5ed4] {\n    width: 40;\n    align-items: left;\n    text-align: left;\n}\n.bold[data-v-45ba5ed4] {\n    font-weight: bold;\n}\n", ""]);
+exports.push([module.i, "\nStackLayout[data-v-45ba5ed4] {\n    width: 90%;\n    height: 95%;\n}\nActionBar[data-v-45ba5ed4] {\n    background-color: #ffcdd2;\n    color: #000000;\n}\n.message[data-v-45ba5ed4] {\n    /* text-align: center; */\n    font-size: 20;\n    color: #333333;\n}\nbutton[data-v-45ba5ed4] {\n    background-color: #b2dfdb;\n    color: #000;\n}\nImage[data-v-45ba5ed4] {\n    horizontal-align: left;\n    text-align: left;\n    vertical-align: left;\n    width: 100;\n}\n.bold[data-v-45ba5ed4] {\n    font-weight: bold;\n}\n", ""]);
 
 // exports
 
@@ -315,49 +350,57 @@ var render = function() {
             "StackLayout",
             [
               _c("Label", { staticClass: "message" }, [
-                _vm._v(" " + _vm._s(_vm.taptimes) + " / 25 ")
+                _vm._v(" " + _vm._s(_vm.page) + " / 24 ")
               ]),
               _c("TextField", {
                 attrs: { hint: "Enter a subreddit", text: _vm.subreddit },
                 on: {
-                  input: _vm.getSubreddit,
-                  textChange: function($event) {
-                    _vm.subreddit = $event.value
-                  }
+                  textChange: [
+                    function($event) {
+                      _vm.subreddit = $event.value
+                    },
+                    _vm.getSubreddit
+                  ]
                 }
               }),
-              _c("button", { on: { tap: _vm.getSubreddit } }, [
-                _vm._v("Get subreddit list")
-              ]),
-              _c("button", { on: { tap: _vm.nextpost } }, [
-                _vm._v(_vm._s(_vm.getnextpost))
-              ]),
+              _c("button", { on: { tap: _vm.nextpost } }, [_vm._v(" Next ")]),
               _c("button", { on: { tap: _vm.previouspost } }, [
-                _vm._v(_vm._s(_vm.getpreviouspost))
+                _vm._v(" Previous ")
               ]),
               _c(
-                "ScrollView",
-                { attrs: { orientation: "vertical" } },
+                "PullToRefresh",
+                { on: { refresh: _vm.refreshList } },
                 [
                   _c(
-                    "StackLayout",
+                    "ScrollView",
+                    { attrs: { orientation: "vertical" } },
                     [
-                      _c("Image", {
-                        staticClass: "img-rounded",
-                        attrs: { src: _vm.img }
-                      }),
                       _c(
-                        "Label",
-                        {
-                          staticClass: "message bold",
-                          attrs: { textWrap: "true" }
-                        },
-                        [_vm._v(_vm._s(_vm.title) + " ")]
-                      ),
-                      _c(
-                        "Label",
-                        { staticClass: "message", attrs: { textWrap: "true" } },
-                        [_vm._v(_vm._s(_vm.usernameDisplay) + " ")]
+                        "StackLayout",
+                        [
+                          _c("Image", {
+                            staticClass: "img-rounded",
+                            attrs: { src: _vm.img }
+                          }),
+                          _c(
+                            "Label",
+                            {
+                              staticClass: "message bold",
+                              attrs: { textWrap: "true" },
+                              on: { tap: _vm.openpost }
+                            },
+                            [_vm._v(_vm._s(_vm.title) + " ")]
+                          ),
+                          _c(
+                            "Label",
+                            {
+                              staticClass: "message",
+                              attrs: { textWrap: "true" }
+                            },
+                            [_vm._v(_vm._s(_vm.usernameDisplay) + " ")]
+                          )
+                        ],
+                        1
                       )
                     ],
                     1
@@ -558,8 +601,9 @@ __webpack_require__("../node_modules/tns-core-modules/ui/frame/activity.js");
 
 if (true) {
   nativescript_vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(nativescript_vue_devtools__WEBPACK_IMPORTED_MODULE_2___default.a);
-} // Prints Vue logs when --env.production is *NOT* set while building
+}
 
+nativescript_vue__WEBPACK_IMPORTED_MODULE_0___default.a.registerElement("PullToRefresh", () => __webpack_require__("../node_modules/nativescript-pulltorefresh/pulltorefresh.js").PullToRefresh); // Prints Vue logs when --env.production is *NOT* set while building
 
 nativescript_vue__WEBPACK_IMPORTED_MODULE_0___default.a.config.silent = "development" === 'production';
 new nativescript_vue__WEBPACK_IMPORTED_MODULE_0___default.a({

@@ -216,18 +216,22 @@ var utilityModule = __webpack_require__("../node_modules/tns-core-modules/utils/
       data: [],
       subreddit: "todayilearned",
       title: "",
-      img: ""
+      img: "",
+      maxpages: ""
     };
   },
 
   methods: {
-    // GOTO NExT POST
+    // GOTO NEXT POST
     nextpost() {
-      // PAGE WILL INCREMENT
-      this.page++; // IF PAGE IS ABOVE 25 OR BELOW 0, PAGE WILL TURN BACK TO PAGE 0 (TO PREVENT APP CRASHING)
-
-      if (this.page >= 25 || this.page <= 0) {
+      // When users press previous button (when at page 0) , they will now instead go this.maxpage instead of staying at page 0 (UPDATE 1.3.0)
+      if (this.page >= this.maxpages + 1) {
         this.page = 0;
+      } else if (this.page > 0) {
+        // PAGE WILL INCREMENT
+        this.page++;
+      } else if (this.page <= 0) {
+        this.page = this.maxpages;
       } // SAVE USERNAME, TITLE AND IMAGE VARIABLE
 
 
@@ -241,13 +245,13 @@ var utilityModule = __webpack_require__("../node_modules/tns-core-modules/utils/
     // GOTO PREVIOUS POST
     previouspost() {
       // PAGE WILL DECREMENT
-      // IF PAGE IS ABOVE 25 OR BELOW 0, PAGE WILL TURN BACK TO PAGE 0 (TO PREVENT APP CRASHING)
-      if (this.page >= 25) {
+      // When users press previous button (when at page 0) , they will now instead go this.maxpage instead of staying at page 0 (UPDATE 1.3.0)
+      if (this.page >= this.maxpages + 1) {
         this.page = 0;
       } else if (this.page > 0) {
         this.page--;
       } else if (this.page <= 0) {
-        this.page = 24;
+        this.page = this.maxpages;
       } // SAVE USERNAME, TITLE AND IMAGE VARIABLE
 
 
@@ -260,12 +264,13 @@ var utilityModule = __webpack_require__("../node_modules/tns-core-modules/utils/
 
     // GET SUBREDDIT DATA
     getSubreddit() {
-      fetch("https://www.reddit.com/r/" + this.subreddit + "/new.json").then(response => response.json()).then(json => {
+      fetch("https://www.reddit.com/r/" + this.subreddit + "/new.json?limit=100").then(response => response.json()).then(json => {
         // SAVE DATA TO DATA VARIABLE                        
         this.data = json.data.children; // TURNS TO PAGE O
 
         this.page = 0; // SAVE THE DATA TO VARIABLE
 
+        this.maxpages = json.data.children.length - 1;
         this.usernameDisplay = "/u/" + this.data[this.page].data.author;
         this.title = this.data[this.page].data.title;
         this.img = this.data[this.page].data.thumbnail;
@@ -350,7 +355,9 @@ var render = function() {
             "StackLayout",
             [
               _c("Label", { staticClass: "message" }, [
-                _vm._v(" " + _vm._s(_vm.page) + " / 24 ")
+                _vm._v(
+                  " " + _vm._s(_vm.page) + " / " + _vm._s(_vm.maxpages) + " "
+                )
               ]),
               _c("TextField", {
                 attrs: { hint: "Enter a subreddit", text: _vm.subreddit },

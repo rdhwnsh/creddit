@@ -39,11 +39,9 @@
                 {
                     "source": "C:\\Users\\ridhwanshah\\Documents\\GitHub\\creddit\\platforms\\android\\app\\src\\main\\res\\values-v21\\strings.xml",
                     "from": {
-                        "startLines": "2,3",
-                        "startColumns": "4,4",
-                        "startOffsets": "57,103",
-                        "endColumns": "44,57",
-                        "endOffsets": "97,156"
+                        "startLines": "-1,-1",
+                        "startColumns": "-1,-1",
+                        "startOffsets": "-1,-1"
                     },
                     "to": {
                         "startLines": "7,8",

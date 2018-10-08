@@ -1,43 +1,42 @@
 <template>
     <Page>
         <ActionBar :title="apptitle" />
+        <FlexboxLayout>
+            <PullToRefresh @refresh="refreshList">
+                <StackLayout>
 
-        <Scrollview>
-            <StackLayout>
 
 
+                    <!-- SHOWS WHICH PAGE -->
+                    <Label class="message"> {{page}} / {{maxpages}} </Label>
 
-                <!-- SHOWS WHICH PAGE -->
-                <Label class="message"> {{page}} / 24 </Label>
+                    <!-- INPUT FOR ENTERING SUBREDDIT -->
+                    <TextField v-model="subreddit" hint="Enter a subreddit" @textChange="getSubreddit"></TextField>
 
-                <!-- INPUT FOR ENTERING SUBREDDIT -->
-                <TextField v-model="subreddit" hint="Enter a subreddit" @textChange="getSubreddit"></TextField>
+                    <!-- NEXT POST AND PREVIOUS POST BUTTONS -->
+                    <button @tap="nextpost"> Next </button>
+                    <button @tap="previouspost"> Previous </button>
+                    <button @tap="getRandomSubreddit"> RSR </button>
 
-                <!-- NEXT POST AND PREVIOUS POST BUTTONS -->
-                <button @tap="nextpost"> Next </button>
-                <button @tap="previouspost"> Previous </button>
 
-                <!-- <Label class="message bold" textWrap="true">Displaying posts from {{subreddit}} </Label> -->
+                    <!-- <Label class="message bold" textWrap="true">Displaying posts from {{subreddit}} </Label> -->
 
-                <PullToRefresh @refresh="refreshList">
                     <!-- VIEW SUBREDDIT -->
                     <ScrollView orientation="vertical">
-                        <StackLayout>
+
+                        <StackLayout orientation="vertical">
                             <Image class="img-rounded" :src="img" />
 
                             <!-- CALL OPENPOST WHEN THE TITLE IS CLICKED -->
-                            <Label class="message bold" textWrap="true" @tap="openpost" >{{title}} </Label>
+                            <Label class="message bold" textWrap="true" @tap="openpost">{{title}} </Label>
                             <Label class="message" textWrap="true">{{usernameDisplay}} </Label>
                         </StackLayout>
+
                     </ScrollView>
 
-
-                </PullToRefresh>
-
-            </StackLayout>
-        </Scrollview>
-
-
+                </StackLayout>
+            </PullToRefresh>
+        </FlexboxLayout>
     </Page>
 </template>
 
@@ -54,23 +53,25 @@
             return {
                 usernameDisplay: "",
                 page: 0,
-                apptitle: "☝️ creddit",
+                apptitle: "",
                 data: [],
                 subreddit: "todayilearned",
                 title: "",
                 img: "",
+                maxpages: "",
+                appversion: "v1.5.0",
             }
         },
         methods: {
 
-            // GOTO NExT POST
+            // GOTO NEXT POST
             nextpost() {
 
                 // PAGE WILL INCREMENT
                 this.page++;
 
                 // IF PAGE IS ABOVE 25 OR BELOW 0, PAGE WILL TURN BACK TO PAGE 0 (TO PREVENT APP CRASHING)
-                if (this.page >= 25 || this.page <= 0) {
+                if (this.page >= this.maxpages || this.page <= 0) {
                     this.page = 0;
                 }
 
@@ -88,15 +89,15 @@
 
                 // PAGE WILL DECREMENT
 
-                // IF PAGE IS ABOVE 25 OR BELOW 0, PAGE WILL TURN BACK TO PAGE 0 (TO PREVENT APP CRASHING)
-                if (this.page >= 25) {
+                // When users press previous button (when at page 0) , they will now instead go this.maxpages instead of staying at page 0 (UPDATE 1.3.0)
+                if (this.page >= this.maxpages + 1) {
                     this.page = 0;
 
                 } else if (this.page > 0) {
                     this.page--;
 
                 } else if (this.page <= 0) {
-                    this.page = 24;
+                    this.page = this.maxpages;
                 }
 
                 // SAVE USERNAME, TITLE AND IMAGE VARIABLE
@@ -111,7 +112,7 @@
 
             // GET SUBREDDIT DATA
             getSubreddit() {
-                fetch("https://www.reddit.com/r/" + this.subreddit + "/new.json")
+                fetch("https://www.reddit.com/r/" + this.subreddit + "/new.json?limit=100")
                     .then(response => response.json())
                     .then(json => {
 
@@ -122,6 +123,7 @@
                         this.page = 0;
 
                         // SAVE THE DATA TO VARIABLE
+                        this.maxpages = this.data.length - 1;
                         this.usernameDisplay = "/u/" + this.data[this.page].data.author
                         this.title = this.data[this.page].data.title
                         this.img = this.data[this.page].data.thumbnail
@@ -148,7 +150,25 @@
                 // FULL URL
                 let url = "https://www.reddit.com" + permalink
                 utilityModule.openUrl(url);
+            },
+
+            // GETS RANDOM SUBREDDIT
+            getRandomSubreddit(){
+
+                // GETTING DATA LIMIT IS 100 ALWAYS
+                let limit = 100;
+                
+                fetch("https://www.reddit.com/reddits.json?limit="+limit)
+                .then(response=>response.json())
+                .then(json => {
+                    this.subreddit = json.data.children[Math.floor(Math.random()*limit)].data.display_name;
+                    console.log(this.subreddit)
+                })
             }
+        },
+
+        created(){
+            this.apptitle = "☝️ creddit " +  this.appversion
         },
 
         mounted() {
@@ -160,6 +180,12 @@
 </script>
 
 <style scoped>
+    FlexboxLayout {
+        horizontal-align: center;
+        vertical-align: center;
+
+    }
+
     StackLayout {
         width: 90%;
         height: 95%;
@@ -186,6 +212,7 @@
         text-align: left;
         vertical-align: left;
         width: 100;
+        border-radius: 100;
     }
 
     .bold {

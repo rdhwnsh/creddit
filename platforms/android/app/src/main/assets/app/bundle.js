@@ -200,7 +200,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
 var Toast = __webpack_require__("../node_modules/nativescript-toast/toast.js");
 
 
@@ -212,21 +211,23 @@ var utilityModule = __webpack_require__("../node_modules/tns-core-modules/utils/
     return {
       usernameDisplay: "",
       page: 0,
-      apptitle: "☝️ creddit",
+      apptitle: "",
       data: [],
       subreddit: "todayilearned",
       title: "",
-      img: ""
+      img: "",
+      maxpages: "",
+      appversion: "v1.5.0"
     };
   },
 
   methods: {
-    // GOTO NExT POST
+    // GOTO NEXT POST
     nextpost() {
       // PAGE WILL INCREMENT
       this.page++; // IF PAGE IS ABOVE 25 OR BELOW 0, PAGE WILL TURN BACK TO PAGE 0 (TO PREVENT APP CRASHING)
 
-      if (this.page >= 25 || this.page <= 0) {
+      if (this.page >= this.maxpages || this.page <= 0) {
         this.page = 0;
       } // SAVE USERNAME, TITLE AND IMAGE VARIABLE
 
@@ -241,13 +242,13 @@ var utilityModule = __webpack_require__("../node_modules/tns-core-modules/utils/
     // GOTO PREVIOUS POST
     previouspost() {
       // PAGE WILL DECREMENT
-      // IF PAGE IS ABOVE 25 OR BELOW 0, PAGE WILL TURN BACK TO PAGE 0 (TO PREVENT APP CRASHING)
-      if (this.page >= 25) {
+      // When users press previous button (when at page 0) , they will now instead go this.maxpages instead of staying at page 0 (UPDATE 1.3.0)
+      if (this.page >= this.maxpages + 1) {
         this.page = 0;
       } else if (this.page > 0) {
         this.page--;
       } else if (this.page <= 0) {
-        this.page = 24;
+        this.page = this.maxpages;
       } // SAVE USERNAME, TITLE AND IMAGE VARIABLE
 
 
@@ -260,12 +261,13 @@ var utilityModule = __webpack_require__("../node_modules/tns-core-modules/utils/
 
     // GET SUBREDDIT DATA
     getSubreddit() {
-      fetch("https://www.reddit.com/r/" + this.subreddit + "/new.json").then(response => response.json()).then(json => {
+      fetch("https://www.reddit.com/r/" + this.subreddit + "/new.json?limit=100").then(response => response.json()).then(json => {
         // SAVE DATA TO DATA VARIABLE                        
         this.data = json.data.children; // TURNS TO PAGE O
 
         this.page = 0; // SAVE THE DATA TO VARIABLE
 
+        this.maxpages = this.data.length - 1;
         this.usernameDisplay = "/u/" + this.data[this.page].data.author;
         this.title = this.data[this.page].data.title;
         this.img = this.data[this.page].data.thumbnail;
@@ -288,8 +290,22 @@ var utilityModule = __webpack_require__("../node_modules/tns-core-modules/utils/
 
       let url = "https://www.reddit.com" + permalink;
       utilityModule.openUrl(url);
+    },
+
+    // GETS RANDOM SUBREDDIT
+    getRandomSubreddit() {
+      // GETTING DATA LIMIT IS 100 ALWAYS
+      let limit = 100;
+      fetch("https://www.reddit.com/reddits.json?limit=" + limit).then(response => response.json()).then(json => {
+        this.subreddit = json.data.children[Math.floor(Math.random() * limit)].data.display_name;
+        console.log(this.subreddit);
+      });
     }
 
+  },
+
+  created() {
+    this.apptitle = "☝️ creddit " + this.appversion;
   },
 
   mounted() {
@@ -309,7 +325,7 @@ exports = module.exports = __webpack_require__("../node_modules/css-loader/lib/c
 
 
 // module
-exports.push([module.i, "\nStackLayout[data-v-45ba5ed4] {\n    width: 90%;\n    height: 95%;\n}\nActionBar[data-v-45ba5ed4] {\n    background-color: #ffcdd2;\n    color: #000000;\n}\n.message[data-v-45ba5ed4] {\n    /* text-align: center; */\n    font-size: 20;\n    color: #333333;\n}\nbutton[data-v-45ba5ed4] {\n    background-color: #b2dfdb;\n    color: #000;\n}\nImage[data-v-45ba5ed4] {\n    horizontal-align: left;\n    text-align: left;\n    vertical-align: left;\n    width: 100;\n}\n.bold[data-v-45ba5ed4] {\n    font-weight: bold;\n}\n", ""]);
+exports.push([module.i, "\nFlexboxLayout[data-v-45ba5ed4] {\n    horizontal-align: center;\n    vertical-align: center;\n}\nStackLayout[data-v-45ba5ed4] {\n    width: 90%;\n    height: 95%;\n}\nActionBar[data-v-45ba5ed4] {\n    background-color: #ffcdd2;\n    color: #000000;\n}\n.message[data-v-45ba5ed4] {\n    /* text-align: center; */\n    font-size: 20;\n    color: #333333;\n}\nbutton[data-v-45ba5ed4] {\n    background-color: #b2dfdb;\n    color: #000;\n}\nImage[data-v-45ba5ed4] {\n    horizontal-align: left;\n    text-align: left;\n    vertical-align: left;\n    width: 100;\n    border-radius: 100;\n}\n.bold[data-v-45ba5ed4] {\n    font-weight: bold;\n}\n", ""]);
 
 // exports
 
@@ -344,39 +360,51 @@ var render = function() {
     [
       _c("ActionBar", { attrs: { title: _vm.apptitle } }),
       _c(
-        "Scrollview",
+        "FlexboxLayout",
         [
           _c(
-            "StackLayout",
+            "PullToRefresh",
+            { on: { refresh: _vm.refreshList } },
             [
-              _c("Label", { staticClass: "message" }, [
-                _vm._v(" " + _vm._s(_vm.page) + " / 24 ")
-              ]),
-              _c("TextField", {
-                attrs: { hint: "Enter a subreddit", text: _vm.subreddit },
-                on: {
-                  textChange: [
-                    function($event) {
-                      _vm.subreddit = $event.value
-                    },
-                    _vm.getSubreddit
-                  ]
-                }
-              }),
-              _c("button", { on: { tap: _vm.nextpost } }, [_vm._v(" Next ")]),
-              _c("button", { on: { tap: _vm.previouspost } }, [
-                _vm._v(" Previous ")
-              ]),
               _c(
-                "PullToRefresh",
-                { on: { refresh: _vm.refreshList } },
+                "StackLayout",
                 [
+                  _c("Label", { staticClass: "message" }, [
+                    _vm._v(
+                      " " +
+                        _vm._s(_vm.page) +
+                        " / " +
+                        _vm._s(_vm.maxpages) +
+                        " "
+                    )
+                  ]),
+                  _c("TextField", {
+                    attrs: { hint: "Enter a subreddit", text: _vm.subreddit },
+                    on: {
+                      textChange: [
+                        function($event) {
+                          _vm.subreddit = $event.value
+                        },
+                        _vm.getSubreddit
+                      ]
+                    }
+                  }),
+                  _c("button", { on: { tap: _vm.nextpost } }, [
+                    _vm._v(" Next ")
+                  ]),
+                  _c("button", { on: { tap: _vm.previouspost } }, [
+                    _vm._v(" Previous ")
+                  ]),
+                  _c("button", { on: { tap: _vm.getRandomSubreddit } }, [
+                    _vm._v(" RSR ")
+                  ]),
                   _c(
                     "ScrollView",
                     { attrs: { orientation: "vertical" } },
                     [
                       _c(
                         "StackLayout",
+                        { attrs: { orientation: "vertical" } },
                         [
                           _c("Image", {
                             staticClass: "img-rounded",

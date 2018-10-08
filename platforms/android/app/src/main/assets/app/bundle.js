@@ -201,6 +201,18 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 var Toast = __webpack_require__("../node_modules/nativescript-toast/toast.js");
 
 
@@ -221,7 +233,8 @@ var feedback = new FeedbackPlugin.Feedback();
       title: "",
       img: "",
       maxpages: "",
-      appversion: "v1.5.1r1"
+      appversion: "v1.5.1r1",
+      _dataverify: false
     };
   },
 
@@ -265,6 +278,7 @@ var feedback = new FeedbackPlugin.Feedback();
 
     // GET SUBREDDIT DATA
     getSubreddit() {
+      this._dataverify = false;
       fetch("https://www.reddit.com/r/" + this.subreddit + "/new.json?limit=100").then(response => response.json()).then(json => {
         // SAVE DATA TO DATA VARIABLE                        
         this.data = json.data.children; // TURNS TO PAGE O
@@ -275,6 +289,7 @@ var feedback = new FeedbackPlugin.Feedback();
         this.usernameDisplay = "/u/" + this.data[this.page].data.author;
         this.title = this.data[this.page].data.title;
         this.img = this.data[this.page].data.thumbnail;
+        this._dataverify = true;
       });
     },
 
@@ -412,41 +427,77 @@ var render = function() {
                   _c("button", { on: { tap: _vm.previouspost } }, [
                     _vm._v(" Previous ")
                   ]),
-                  _c(
-                    "ScrollView",
-                    { attrs: { orientation: "vertical" } },
-                    [
-                      _c(
+                  _vm._dataverify
+                    ? _c(
                         "StackLayout",
-                        { attrs: { orientation: "vertical" } },
                         [
-                          _c("Image", {
-                            staticClass: "img-rounded",
-                            attrs: { src: _vm.img }
-                          }),
                           _c(
-                            "Label",
-                            {
-                              staticClass: "message bold",
-                              attrs: { textWrap: "true" },
-                              on: { tap: _vm.openpost }
-                            },
-                            [_vm._v(_vm._s(_vm.title) + " ")]
-                          ),
-                          _c(
-                            "Label",
-                            {
-                              staticClass: "message",
-                              attrs: { textWrap: "true" }
-                            },
-                            [_vm._v(_vm._s(_vm.usernameDisplay) + " ")]
+                            "ScrollView",
+                            { attrs: { orientation: "vertical" } },
+                            [
+                              _c(
+                                "StackLayout",
+                                { attrs: { orientation: "vertical" } },
+                                [
+                                  _c("Image", {
+                                    staticClass: "img-rounded",
+                                    attrs: { src: _vm.img }
+                                  }),
+                                  _c(
+                                    "Label",
+                                    {
+                                      staticClass: "message bold",
+                                      attrs: { textWrap: "true" },
+                                      on: { tap: _vm.openpost }
+                                    },
+                                    [_vm._v(_vm._s(_vm.title) + " ")]
+                                  ),
+                                  _c(
+                                    "Label",
+                                    {
+                                      staticClass: "message",
+                                      attrs: { textWrap: "true" }
+                                    },
+                                    [_vm._v(_vm._s(_vm.usernameDisplay) + " ")]
+                                  )
+                                ],
+                                1
+                              )
+                            ],
+                            1
                           )
                         ],
                         1
                       )
-                    ],
-                    1
-                  )
+                    : _c(
+                        "StackLayout",
+                        [
+                          _c(
+                            "ScrollView",
+                            { attrs: { orientation: "vertical" } },
+                            [
+                              _c(
+                                "StackLayout",
+                                { attrs: { orientation: "vertical" } },
+                                [
+                                  _c(
+                                    "Label",
+                                    {
+                                      staticClass: "message bold",
+                                      attrs: { textWrap: "true" },
+                                      on: { tap: _vm.openpost }
+                                    },
+                                    [_vm._v("Data Is Loading... ")]
+                                  )
+                                ],
+                                1
+                              )
+                            ],
+                            1
+                          )
+                        ],
+                        1
+                      )
                 ],
                 1
               )

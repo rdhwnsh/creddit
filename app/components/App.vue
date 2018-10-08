@@ -11,7 +11,7 @@
                     <Label class="message"> {{page}} / {{maxpages}} </Label>
 
                     <!-- INPUT FOR ENTERING SUBREDDIT -->
-                    <TextField v-model="subreddit" hint="Enter a subreddit" @textChange="subredditValidation" 
+                    <TextField v-model="subreddit" hint="Enter a subreddit" @textChange="subredditValidation"
                         returnKeyType="done"></TextField>
 
                     <!-- NEXT POST AND PREVIOUS POST BUTTONS -->
@@ -23,17 +23,29 @@
                     <!-- <Label class="message bold" textWrap="true">Displaying posts from {{subreddit}} </Label> -->
 
                     <!-- VIEW SUBREDDIT -->
-                    <ScrollView orientation="vertical">
+                    <StackLayout v-if="_dataverify">
+                        <ScrollView orientation="vertical">
 
-                        <StackLayout orientation="vertical">
-                            <Image class="img-rounded" :src="img" />
+                            <StackLayout orientation="vertical">
+                                <Image class="img-rounded" :src="img" />
 
-                            <!-- CALL OPENPOST WHEN THE TITLE IS CLICKED -->
-                            <Label class="message bold" textWrap="true" @tap="openpost">{{title}} </Label>
-                            <Label class="message" textWrap="true">{{usernameDisplay}} </Label>
-                        </StackLayout>
+                                <!-- CALL OPENPOST WHEN THE TITLE IS CLICKED -->
+                                <Label class="message bold" textWrap="true" @tap="openpost">{{title}} </Label>
+                                <Label class="message" textWrap="true">{{usernameDisplay}} </Label>
+                            </StackLayout>
 
-                    </ScrollView>
+                        </ScrollView>
+                    </StackLayout>
+
+                    <StackLayout v-else>
+                        <ScrollView orientation="vertical">
+
+                            <StackLayout orientation="vertical">
+                                <Label class="message bold" textWrap="true" @tap="openpost">Data Is Loading... </Label>
+                            </StackLayout>
+
+                        </ScrollView>
+                    </StackLayout>
 
                 </StackLayout>
             </PullToRefresh>
@@ -65,6 +77,7 @@
                 img: "",
                 maxpages: "",
                 appversion: "v1.5.1r1",
+                _dataverify: false,
             }
         },
         methods: {
@@ -117,6 +130,9 @@
 
             // GET SUBREDDIT DATA
             getSubreddit() {
+
+                this._dataverify = false;
+                
                 fetch("https://www.reddit.com/r/" + this.subreddit + "/new.json?limit=100")
                     .then(response => response.json())
                     .then(json => {
@@ -131,6 +147,8 @@
                         this.usernameDisplay = "/u/" + this.data[this.page].data.author
                         this.title = this.data[this.page].data.title
                         this.img = this.data[this.page].data.thumbnail
+
+                        this._dataverify = true;
                     })
             },
 
@@ -175,7 +193,7 @@
                             console.log(this.subreddit)
                             Toast.makeText("You got a random subreddit: " + this.subreddit).show();
                         })
-                    
+
                 } else {
                     this.getSubreddit()
                 }

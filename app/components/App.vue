@@ -1,143 +1,244 @@
 <template>
     <Page>
         <ActionBar :title="apptitle" />
+        <FlexboxLayout>
+            <PullToRefresh @refresh="refreshList">
+                <StackLayout>
 
-        <Scrollview>
-
-            <StackLayout>
-                <Label class="message"> {{taptimes}} / 25 </Label>
-                <TextField v-model="subreddit" hint="Enter a subreddit" @input="getSubreddit"></TextField>
-                <button @tap="getSubreddit">Get subreddit list</button>
-                <button @tap="nextpost">{{getnextpost}}</button>
-                <button @tap="previouspost">{{getpreviouspost}}</button>
-
-
-                <!-- <Label class="message bold" textWrap="true">Displaying posts from {{subreddit}} </Label> -->
-
-
-                <Image class="img-rounded" :src="img" />
-                <Label class="message bold" textWrap="true">{{title}} </Label>
-                <Label class="message" textWrap="true">{{usernameDisplay}} </Label>
-
-            </StackLayout>
-
-            <!-- <GridLayout colums="*" rows="*">
-            <Label class="message" :text="usernameDisplay" col="0" row="0"/>
-        </GridLayout> -->
-
-
-        </Scrollview>
+                    <!-- SHOWS WHICH PAGE -->
+                    <Progress :value="page" :maxValue="maxpages" />
+                    
+                    <!-- INPUT FOR ENTERING SUBREDDIT -->
+                    <TextField v-model="subreddit" hint="Enter a subreddit" @textChange="subredditValidation"
+                        returnKeyType="done" style="width:90%; background: #181b1f; border-radius: 20; padding-left: 20; margin: 10px 0;"></TextField>
+                    <!-- NEXT POST AND PREVIOUS POST BUTTONS -->
+                    <button @tap="nextpost" style="width:90%"> Next </button>
+                    <button @tap="previouspost" style="width:90%; margin-bottom:10;"> Previous </button>
+                    <!-- <button @tap="subredditValidation"> RSR </button> -->
+                    <!-- <Label class="message bold" textWrap="true">Displaying posts from {{subreddit}} </Label> -->
+                    <!-- VIEW SUBREDDIT -->
+                    <StackLayout v-if="dataverified">
+                        <ScrollView orientation="vertical">
+                            <StackLayout orientation="vertical">
+                                <Image class="img-rounded" :src="img" />
+                                <!-- CALL OPENPOST WHEN THE TITLE IS CLICKED -->
+                                <Label class="message bold" textWrap="true" @tap="openpost">{{title}} </Label>
+                                <Label class="message" textWrap="true">{{usernameDisplay}} </Label>
+                            </StackLayout>
+                        </ScrollView>
+                    </StackLayout>
+                    <StackLayout v-else>
+                        <ScrollView orientation="vertical">
+                            <StackLayout orientation="vertical">
+                                <Label class="message bold" textWrap="true" @tap="openpost">Data Is Loading... </Label>
+                            </StackLayout>
+                        </ScrollView>
+                    </StackLayout>
+                </StackLayout>
+            </PullToRefresh>
+        </FlexboxLayout>
     </Page>
 </template>
 
 <script>
     var Toast = require("nativescript-toast")
+    import {registerElement} from "nativescript-pulltorefresh";
+    var utilityModule = require("utils/utils");
+
     export default {
         data() {
             return {
                 usernameDisplay: "",
-                taptimes: 0,
-                apptitle: "dev.bynabil.nativescript-reddit",
+                page: 0,
+                apptitle: "",
                 data: [],
                 subreddit: "todayilearned",
                 title: "",
                 img: "",
-                getnextpost: "Press the button above first!",
-                getpreviouspost: "Press the button above first!",
+                maxpages: "",
+                appversion: "v1.6.0",
+                dataverified: false,
             }
         },
         methods: {
+
+            // GOTO NEXT POST
             nextpost() {
-                this.taptimes++;
 
-                if (this.taptimes >= 25 || this.taptimes <= 0) {
-                    this.taptimes = 0;
+                // PAGE WILL INCREMENT
+                this.page++;
+
+                // IF PAGE IS ABOVE 25 OR BELOW 0, PAGE WILL TURN BACK TO PAGE 0 (TO PREVENT APP CRASHING)
+                if (this.page >= this.maxpages || this.page <= 0) {
+                    this.page = 0;
                 }
-                    this.usernameDisplay = "/u/" + this.data[this.taptimes].data.author
-                    this.title = this.data[this.taptimes].data.title
-                    this.img = this.data[this.taptimes].data.thumbnail
 
-                console.log(this.taptimes);
+                // SAVE USERNAME, TITLE AND IMAGE VARIABLE
+                this.usernameDisplay = "/u/" + this.data[this.page].data.author
+                this.title = this.data[this.page].data.title
+                this.img = this.data[this.page].data.thumbnail
+
+                // CONSOLE.LOG THE PAGE NUMBER
+                console.log(this.page);
             },
 
+            // GOTO PREVIOUS POST
             previouspost() {
-                this.taptimes--;
-                if (this.taptimes >= 25 || this.taptimes <= 0) {
-                    this.taptimes = 0;
-                }
-                    this.usernameDisplay = "/u/" + this.data[this.taptimes].data.author
-                    this.title = this.data[this.taptimes].data.title
-                    this.img = this.data[this.taptimes].data.thumbnail
 
-                console.log(this.taptimes);
+                // PAGE WILL DECREMENT
+
+                // When users press previous button (when at page 0) , they will now instead go this.maxpages instead of staying at page 0 (UPDATE 1.3.0)
+                if (this.page >= this.maxpages + 1) {
+                    this.page = 0;
+
+                } else if (this.page > 0) {
+                    this.page--;
+
+                } else if (this.page <= 0) {
+                    this.page = this.maxpages;
+                }
+
+                // SAVE USERNAME, TITLE AND IMAGE VARIABLE
+                this.usernameDisplay = "/u/" + this.data[this.page].data.author
+                this.title = this.data[this.page].data.title
+                this.img = this.data[this.page].data.thumbnail
+
+                // CONSOLE.LOG THE PAGE NUMBER
+                console.log(this.page);
 
             },
 
-            getSubreddit() {
-                fetch("https://www.reddit.com/r/" + this.subreddit + ".json")
+            // GET SUBREDDIT DATA
+            getSub() {
+
+                this.dataverified = false;
+                
+                fetch("https://www.reddit.com/r/" + this.subreddit + "/new.json?limit=100")
                     .then(response => response.json())
                     .then(json => {
+                        // SAVE DATA TO DATA VARIABLE                        
                         this.data = json.data.children
-                        this.getnextpost = "Get next post"
-                        this.getpreviouspost = "get previous post"
 
-                        this.taptimes++;
-                        this.usernameDisplay = "/u/" + this.data[this.taptimes].data.author
-                        this.title = this.data[this.taptimes].data.title
-                        this.img = this.data[this.taptimes].data.thumbnail
+                        // TURNS TO PAGE O
+                        this.page = 0;
 
-                        var doneToast = Toast.makeText("Done getting subreddit").show();
+                        // SAVE THE DATA TO VARIABLE
+                        this.maxpages = this.data.length - 1;
+                        this.usernameDisplay = "/u/" + this.data[this.page].data.author
+                        this.title = this.data[this.page].data.title
+                        this.img = this.data[this.page].data.thumbnail
+                        this.dataverified = true;
                     })
+            },
+
+            // REFRESH LIST
+            refreshList(args) {
+
+                this.getSub()
+                Toast.makeText("Refreshing...").show()
+
+                var pullRefresh = args.object;
+                setTimeout(function () {
+                    pullRefresh.refreshing = false;
+                }, 1000);
+            },
+
+            // OPENS POST IN BROWSER
+            openpost() {
+
+                // GET THE PERMALINK BY USING THE PAGE NUMBER (INDEX)
+                let permalink = this.data[this.page].data.permalink
+
+                // FULL URL
+                let url = "https://www.reddit.com" + permalink
+                utilityModule.openUrl(url);
+            },
+
+            getRandomSub(){
+
+                    this.dataverified = false;
+
+                    // GETTING DATA LIMIT IS 100 ALWAYS
+                    let limit = 100;
+
+                    Toast.makeText("Getting all the subreddits...").show();
+
+                    fetch("https://www.reddit.com/reddits.json?limit=" + limit)
+                        .then(response => response.json())
+                        .then(json => {
+                            this.subreddit = json.data.children[Math.floor(Math.random() * limit)].data.display_name;
+                            console.log(this.subreddit)
+                            Toast.makeText("You got a random subreddit: " + this.subreddit).show();
+                            this.dataverified = true;
+                        })
+            },
+            
+            // GETS RANDOM SUBREDDIT
+            subredditValidation() {
+                let keyword = "getrandomsub"
+
+                if (this.subreddit.toLowerCase() == keyword) {
+                    this.getRandomSub()
+                } else {
+                    this.getSub()
+                }
+
+
             }
         },
 
         created() {
-            var welcometoast = Toast.makeText("Welcome!").show();
-            fetch("https://www.reddit.com/r/" + this.subreddit + ".json")
-                .then(response => {
-                    response.json()
-                })
-                .then(json => {
-                    this.data = json.data.children
-                    this.getnextpost = "Get next post"
-                    this.getpreviouspost = "get previous post"
+            this.apptitle = "☝️ creddit " + this.appversion
+        },
 
-                    this.taptimes++;
-                    this.usernameDisplay = "/u/" + this.data[this.taptimes].data.author
-                    this.title = this.data[this.taptimes].data.title
-                    this.img = this.data[this.taptimes].data.thumbnail
-                })
+        mounted() {
+            var welcometoast = Toast.makeText("Welcome!").show();
+            this.getSub();
         }
 
     }
 </script>
 
 <style scoped>
+
+    Page{
+        background: #24292e;
+        color: white;
+    }
+
+    FlexboxLayout {
+        horizontal-align: center;
+        vertical-align: center;
+
+    }
+
     StackLayout {
         width: 90%;
-        height: 90%;
+        height: 95%;
     }
 
     ActionBar {
-        background-color: #ba5353;
-        color: #ffffff;
+        background-color: #ffcdd2;
+        color: #000000;
     }
 
     .message {
         /* text-align: center; */
         font-size: 20;
-        color: #333333;
+        color: #FFF;
     }
 
     button {
-        background-color: #ba5353;
-        color: #ffffff;
+        background-color: #b2dfdb;
+        color: #000;
     }
 
     Image {
-        width: 200;
-        align-items: left;
+        horizontal-align: left;
         text-align: left;
+        vertical-align: left;
+        width: 100;
+        border-radius: 100;
     }
 
     .bold {

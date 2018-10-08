@@ -6,5 +6,9 @@
 	},
 	"tns-core-modules-widgets": {
 		"C:\\Users\\ridhwanshah\\Documents\\GitHub\\creddit\\node_modules\\tns-core-modules-widgets\\platforms\\android\\widgets-release.aar": "402875596039fd16198e0e4adbb85e44a4ff148d"
+	},
+	"nativescript-feedback": {
+		"C:\\Users\\ridhwanshah\\Documents\\GitHub\\creddit\\node_modules\\nativescript-feedback\\platforms\\android\\include.gradle": "d3f608c8e5aa83ed1b179418ff94b8410cb59419",
+		"C:\\Users\\ridhwanshah\\Documents\\GitHub\\creddit\\node_modules\\nativescript-feedback\\platforms\\android\\nativescript_feedback.aar": "1d2cf803c261d6a91b635c0e9e73f18ae00754ce"
 	}
 }

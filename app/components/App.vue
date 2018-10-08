@@ -11,12 +11,13 @@
                     <Label class="message"> {{page}} / {{maxpages}} </Label>
 
                     <!-- INPUT FOR ENTERING SUBREDDIT -->
-                    <TextField v-model="subreddit" hint="Enter a subreddit" @textChange="getSubreddit"></TextField>
+                    <TextField v-model="subreddit" hint="Enter a subreddit" @textChange="subredditValidation" 
+                        returnKeyType="done"></TextField>
 
                     <!-- NEXT POST AND PREVIOUS POST BUTTONS -->
                     <button @tap="nextpost"> Next </button>
                     <button @tap="previouspost"> Previous </button>
-                    <button @tap="getRandomSubreddit"> RSR </button>
+                    <!-- <button @tap="subredditValidation"> RSR </button> -->
 
 
                     <!-- <Label class="message bold" textWrap="true">Displaying posts from {{subreddit}} </Label> -->
@@ -48,6 +49,10 @@
 
     var utilityModule = require("utils/utils");
 
+    var FeedbackPlugin = require("nativescript-feedback");
+    var feedback = new FeedbackPlugin.Feedback();
+
+
     export default {
         data() {
             return {
@@ -59,7 +64,7 @@
                 title: "",
                 img: "",
                 maxpages: "",
-                appversion: "v1.5.0",
+                appversion: "v1.5.1",
             }
         },
         methods: {
@@ -115,7 +120,6 @@
                 fetch("https://www.reddit.com/r/" + this.subreddit + "/new.json?limit=100")
                     .then(response => response.json())
                     .then(json => {
-
                         // SAVE DATA TO DATA VARIABLE                        
                         this.data = json.data.children
 
@@ -153,22 +157,34 @@
             },
 
             // GETS RANDOM SUBREDDIT
-            getRandomSubreddit(){
+            subredditValidation() {
 
-                // GETTING DATA LIMIT IS 100 ALWAYS
-                let limit = 100;
-                
-                fetch("https://www.reddit.com/reddits.json?limit="+limit)
-                .then(response=>response.json())
-                .then(json => {
-                    this.subreddit = json.data.children[Math.floor(Math.random()*limit)].data.display_name;
-                    console.log(this.subreddit)
-                })
+                let keyword = "getrandomsub"
+                if (this.subreddit.toLowerCase() == keyword) {
+
+                    // GETTING DATA LIMIT IS 100 ALWAYS
+                    let limit = 100;
+
+                    Toast.makeText("Getting all the subreddits...").show();
+
+                    fetch("https://www.reddit.com/reddits.json?limit=" + limit)
+                        .then(response => response.json())
+                        .then(json => {
+                            this.subreddit = json.data.children[Math.floor(Math.random() * limit)].data.display_name;
+                            console.log(this.subreddit)
+                            Toast.makeText("You got a random subreddit: " + this.subreddit).show();
+                        })
+                    
+                } else {
+                    this.getSubreddit()
+                }
+
+
             }
         },
 
-        created(){
-            this.apptitle = "☝️ creddit " +  this.appversion
+        created() {
+            this.apptitle = "☝️ creddit " + this.appversion
         },
 
         mounted() {

@@ -200,12 +200,16 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 var Toast = __webpack_require__("../node_modules/nativescript-toast/toast.js");
 
 
 
 var utilityModule = __webpack_require__("../node_modules/tns-core-modules/utils/utils.js");
 
+var FeedbackPlugin = __webpack_require__("../node_modules/nativescript-feedback/feedback.js");
+
+var feedback = new FeedbackPlugin.Feedback();
 /* harmony default export */ __webpack_exports__["default"] = ({
   data() {
     return {
@@ -217,7 +221,7 @@ var utilityModule = __webpack_require__("../node_modules/tns-core-modules/utils/
       title: "",
       img: "",
       maxpages: "",
-      appversion: "v1.5.0"
+      appversion: "v1.5.1"
     };
   },
 
@@ -293,13 +297,21 @@ var utilityModule = __webpack_require__("../node_modules/tns-core-modules/utils/
     },
 
     // GETS RANDOM SUBREDDIT
-    getRandomSubreddit() {
-      // GETTING DATA LIMIT IS 100 ALWAYS
-      let limit = 100;
-      fetch("https://www.reddit.com/reddits.json?limit=" + limit).then(response => response.json()).then(json => {
-        this.subreddit = json.data.children[Math.floor(Math.random() * limit)].data.display_name;
-        console.log(this.subreddit);
-      });
+    subredditValidation() {
+      let keyword = "getrandomsub";
+
+      if (this.subreddit.toLowerCase() == keyword) {
+        // GETTING DATA LIMIT IS 100 ALWAYS
+        let limit = 100;
+        Toast.makeText("Getting all the subreddits...").show();
+        fetch("https://www.reddit.com/reddits.json?limit=" + limit).then(response => response.json()).then(json => {
+          this.subreddit = json.data.children[Math.floor(Math.random() * limit)].data.display_name;
+          console.log(this.subreddit);
+          Toast.makeText("You got a random subreddit: " + this.subreddit).show();
+        });
+      } else {
+        this.getSubreddit();
+      }
     }
 
   },
@@ -379,13 +391,17 @@ var render = function() {
                     )
                   ]),
                   _c("TextField", {
-                    attrs: { hint: "Enter a subreddit", text: _vm.subreddit },
+                    attrs: {
+                      hint: "Enter a subreddit",
+                      returnKeyType: "done",
+                      text: _vm.subreddit
+                    },
                     on: {
                       textChange: [
                         function($event) {
                           _vm.subreddit = $event.value
                         },
-                        _vm.getSubreddit
+                        _vm.subredditValidation
                       ]
                     }
                   }),
@@ -394,9 +410,6 @@ var render = function() {
                   ]),
                   _c("button", { on: { tap: _vm.previouspost } }, [
                     _vm._v(" Previous ")
-                  ]),
-                  _c("button", { on: { tap: _vm.getRandomSubreddit } }, [
-                    _vm._v(" RSR ")
                   ]),
                   _c(
                     "ScrollView",

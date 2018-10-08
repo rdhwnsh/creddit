@@ -1,5 +1,9 @@
 [
     {
+        "name": "nativescript-feedback",
+        "directory": "..\\..\\node_modules\\nativescript-feedback"
+    },
+    {
         "name": "nativescript-pulltorefresh",
         "directory": "..\\..\\node_modules\\nativescript-pulltorefresh"
     },

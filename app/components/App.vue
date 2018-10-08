@@ -4,49 +4,34 @@
         <FlexboxLayout>
             <PullToRefresh @refresh="refreshList">
                 <StackLayout>
-
-
-
                     <!-- SHOWS WHICH PAGE -->
-                    <Label class="message"> {{page}} / {{maxpages}} </Label>
-
+                    <Label class="message"> {{page}} / 9 </Label>
                     <!-- INPUT FOR ENTERING SUBREDDIT -->
                     <TextField v-model="subreddit" hint="Enter a subreddit" @textChange="subredditValidation"
                         returnKeyType="done"></TextField>
-
                     <!-- NEXT POST AND PREVIOUS POST BUTTONS -->
                     <button @tap="nextpost"> Next </button>
                     <button @tap="previouspost"> Previous </button>
                     <!-- <button @tap="subredditValidation"> RSR </button> -->
-
-
                     <!-- <Label class="message bold" textWrap="true">Displaying posts from {{subreddit}} </Label> -->
-
                     <!-- VIEW SUBREDDIT -->
-                    <StackLayout v-if="_dataverify">
+                    <StackLayout v-if="dataverified">
                         <ScrollView orientation="vertical">
-
                             <StackLayout orientation="vertical">
                                 <Image class="img-rounded" :src="img" />
-
                                 <!-- CALL OPENPOST WHEN THE TITLE IS CLICKED -->
                                 <Label class="message bold" textWrap="true" @tap="openpost">{{title}} </Label>
                                 <Label class="message" textWrap="true">{{usernameDisplay}} </Label>
                             </StackLayout>
-
                         </ScrollView>
                     </StackLayout>
-
                     <StackLayout v-else>
                         <ScrollView orientation="vertical">
-
                             <StackLayout orientation="vertical">
                                 <Label class="message bold" textWrap="true" @tap="openpost">Data Is Loading... </Label>
                             </StackLayout>
-
                         </ScrollView>
                     </StackLayout>
-
                 </StackLayout>
             </PullToRefresh>
         </FlexboxLayout>
@@ -55,15 +40,8 @@
 
 <script>
     var Toast = require("nativescript-toast")
-    import {
-        registerElement
-    } from "nativescript-pulltorefresh";
-
+    import {registerElement} from "nativescript-pulltorefresh";
     var utilityModule = require("utils/utils");
-
-    var FeedbackPlugin = require("nativescript-feedback");
-    var feedback = new FeedbackPlugin.Feedback();
-
 
     export default {
         data() {
@@ -77,7 +55,7 @@
                 img: "",
                 maxpages: "",
                 appversion: "v1.5.1r2",
-                _dataverify: false,
+                dataverified: false,
             }
         },
         methods: {
@@ -129,9 +107,9 @@
             },
 
             // GET SUBREDDIT DATA
-            getSubreddit() {
+            getSub() {
 
-                this._dataverify = false;
+                this.dataverified = false;
                 
                 fetch("https://www.reddit.com/r/" + this.subreddit + "/new.json?limit=100")
                     .then(response => response.json())
@@ -147,15 +125,14 @@
                         this.usernameDisplay = "/u/" + this.data[this.page].data.author
                         this.title = this.data[this.page].data.title
                         this.img = this.data[this.page].data.thumbnail
-
-                        this._dataverify = true;
+                        this.dataverified = true;
                     })
             },
 
             // REFRESH LIST
             refreshList(args) {
 
-                this.getSubreddit()
+                this.getSub()
                 Toast.makeText("Refreshing...").show()
 
                 var pullRefresh = args.object;
@@ -175,11 +152,9 @@
                 utilityModule.openUrl(url);
             },
 
-            // GETS RANDOM SUBREDDIT
-            subredditValidation() {
+            getRandomSub(){
 
-                let keyword = "getrandomsub"
-                if (this.subreddit.toLowerCase() == keyword) {
+                    this.dataverified = false;
 
                     // GETTING DATA LIMIT IS 100 ALWAYS
                     let limit = 100;
@@ -192,10 +167,18 @@
                             this.subreddit = json.data.children[Math.floor(Math.random() * limit)].data.display_name;
                             console.log(this.subreddit)
                             Toast.makeText("You got a random subreddit: " + this.subreddit).show();
+                            this.dataverified = true;
                         })
+            },
+            
+            // GETS RANDOM SUBREDDIT
+            subredditValidation() {
+                let keyword = "getrandomsub"
 
+                if (this.subreddit.toLowerCase() == keyword) {
+                    this.getRandomSub()
                 } else {
-                    this.getSubreddit()
+                    this.getSub()
                 }
 
 
@@ -208,7 +191,7 @@
 
         mounted() {
             var welcometoast = Toast.makeText("Welcome!").show();
-            this.getSubreddit();
+            this.getSub();
         }
 
     }

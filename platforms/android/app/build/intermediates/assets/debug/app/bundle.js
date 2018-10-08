@@ -198,30 +198,12 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 var Toast = __webpack_require__("../node_modules/nativescript-toast/toast.js");
 
 
 
 var utilityModule = __webpack_require__("../node_modules/tns-core-modules/utils/utils.js");
 
-var FeedbackPlugin = __webpack_require__("../node_modules/nativescript-feedback/feedback.js");
-
-var feedback = new FeedbackPlugin.Feedback();
 /* harmony default export */ __webpack_exports__["default"] = ({
   data() {
     return {
@@ -233,8 +215,8 @@ var feedback = new FeedbackPlugin.Feedback();
       title: "",
       img: "",
       maxpages: "",
-      appversion: "v1.5.1r1",
-      _dataverify: false
+      appversion: "v1.5.1r2",
+      dataverified: false
     };
   },
 
@@ -277,8 +259,8 @@ var feedback = new FeedbackPlugin.Feedback();
     },
 
     // GET SUBREDDIT DATA
-    getSubreddit() {
-      this._dataverify = false;
+    getSub() {
+      this.dataverified = false;
       fetch("https://www.reddit.com/r/" + this.subreddit + "/new.json?limit=100").then(response => response.json()).then(json => {
         // SAVE DATA TO DATA VARIABLE                        
         this.data = json.data.children; // TURNS TO PAGE O
@@ -289,13 +271,13 @@ var feedback = new FeedbackPlugin.Feedback();
         this.usernameDisplay = "/u/" + this.data[this.page].data.author;
         this.title = this.data[this.page].data.title;
         this.img = this.data[this.page].data.thumbnail;
-        this._dataverify = true;
+        this.dataverified = true;
       });
     },
 
     // REFRESH LIST
     refreshList(args) {
-      this.getSubreddit();
+      this.getSub();
       Toast.makeText("Refreshing...").show();
       var pullRefresh = args.object;
       setTimeout(function () {
@@ -312,21 +294,27 @@ var feedback = new FeedbackPlugin.Feedback();
       utilityModule.openUrl(url);
     },
 
+    getRandomSub() {
+      this.dataverified = false; // GETTING DATA LIMIT IS 100 ALWAYS
+
+      let limit = 100;
+      Toast.makeText("Getting all the subreddits...").show();
+      fetch("https://www.reddit.com/reddits.json?limit=" + limit).then(response => response.json()).then(json => {
+        this.subreddit = json.data.children[Math.floor(Math.random() * limit)].data.display_name;
+        console.log(this.subreddit);
+        Toast.makeText("You got a random subreddit: " + this.subreddit).show();
+        this.dataverified = true;
+      });
+    },
+
     // GETS RANDOM SUBREDDIT
     subredditValidation() {
       let keyword = "getrandomsub";
 
       if (this.subreddit.toLowerCase() == keyword) {
-        // GETTING DATA LIMIT IS 100 ALWAYS
-        let limit = 100;
-        Toast.makeText("Getting all the subreddits...").show();
-        fetch("https://www.reddit.com/reddits.json?limit=" + limit).then(response => response.json()).then(json => {
-          this.subreddit = json.data.children[Math.floor(Math.random() * limit)].data.display_name;
-          console.log(this.subreddit);
-          Toast.makeText("You got a random subreddit: " + this.subreddit).show();
-        });
+        this.getRandomSub();
       } else {
-        this.getSubreddit();
+        this.getSub();
       }
     }
 
@@ -338,7 +326,7 @@ var feedback = new FeedbackPlugin.Feedback();
 
   mounted() {
     var welcometoast = Toast.makeText("Welcome!").show();
-    this.getSubreddit();
+    this.getSub();
   }
 
 });
@@ -398,13 +386,7 @@ var render = function() {
                 "StackLayout",
                 [
                   _c("Label", { staticClass: "message" }, [
-                    _vm._v(
-                      " " +
-                        _vm._s(_vm.page) +
-                        " / " +
-                        _vm._s(_vm.maxpages) +
-                        " "
-                    )
+                    _vm._v(" " + _vm._s(_vm.page) + " / 9 ")
                   ]),
                   _c("TextField", {
                     attrs: {
@@ -427,7 +409,7 @@ var render = function() {
                   _c("button", { on: { tap: _vm.previouspost } }, [
                     _vm._v(" Previous ")
                   ]),
-                  _vm._dataverify
+                  _vm.dataverified
                     ? _c(
                         "StackLayout",
                         [

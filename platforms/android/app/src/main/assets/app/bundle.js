@@ -221,7 +221,7 @@ var feedback = new FeedbackPlugin.Feedback();
       title: "",
       img: "",
       maxpages: "",
-      appversion: "v1.5.1"
+      appversion: "v1.5.1r1"
     };
   },
 
@@ -281,6 +281,7 @@ var feedback = new FeedbackPlugin.Feedback();
     // REFRESH LIST
     refreshList(args) {
       this.getSubreddit();
+      Toast.makeText("Refreshing...").show();
       var pullRefresh = args.object;
       setTimeout(function () {
         pullRefresh.refreshing = false;

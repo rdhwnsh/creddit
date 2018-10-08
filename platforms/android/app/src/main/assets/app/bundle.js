@@ -233,7 +233,7 @@ var feedback = new FeedbackPlugin.Feedback();
       title: "",
       img: "",
       maxpages: "",
-      appversion: "v1.5.1r1",
+      appversion: "v1.5.1r2",
       _dataverify: false
     };
   },

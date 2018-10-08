@@ -4,14 +4,16 @@
         <FlexboxLayout>
             <PullToRefresh @refresh="refreshList">
                 <StackLayout>
+
                     <!-- SHOWS WHICH PAGE -->
-                    <Label class="message"> {{page}} / 9 </Label>
+                    <Progress :value="page" :maxValue="maxpages" />
+                    
                     <!-- INPUT FOR ENTERING SUBREDDIT -->
                     <TextField v-model="subreddit" hint="Enter a subreddit" @textChange="subredditValidation"
-                        returnKeyType="done"></TextField>
+                        returnKeyType="done" style="width:90%; background: #181b1f; border-radius: 20; padding-left: 20; margin: 10px 0;"></TextField>
                     <!-- NEXT POST AND PREVIOUS POST BUTTONS -->
-                    <button @tap="nextpost"> Next </button>
-                    <button @tap="previouspost"> Previous </button>
+                    <button @tap="nextpost" style="width:90%"> Next </button>
+                    <button @tap="previouspost" style="width:90%; margin-bottom:10;"> Previous </button>
                     <!-- <button @tap="subredditValidation"> RSR </button> -->
                     <!-- <Label class="message bold" textWrap="true">Displaying posts from {{subreddit}} </Label> -->
                     <!-- VIEW SUBREDDIT -->
@@ -198,6 +200,12 @@
 </script>
 
 <style scoped>
+
+    Page{
+        background: #24292e;
+        color: white;
+    }
+
     FlexboxLayout {
         horizontal-align: center;
         vertical-align: center;
@@ -217,7 +225,7 @@
     .message {
         /* text-align: center; */
         font-size: 20;
-        color: #333333;
+        color: #FFF;
     }
 
     button {

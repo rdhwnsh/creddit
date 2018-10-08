@@ -198,6 +198,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 var Toast = __webpack_require__("../node_modules/nativescript-toast/toast.js");
 
 
@@ -341,7 +343,7 @@ exports = module.exports = __webpack_require__("../node_modules/css-loader/lib/c
 
 
 // module
-exports.push([module.i, "\nFlexboxLayout[data-v-45ba5ed4] {\n    horizontal-align: center;\n    vertical-align: center;\n}\nStackLayout[data-v-45ba5ed4] {\n    width: 90%;\n    height: 95%;\n}\nActionBar[data-v-45ba5ed4] {\n    background-color: #ffcdd2;\n    color: #000000;\n}\n.message[data-v-45ba5ed4] {\n    /* text-align: center; */\n    font-size: 20;\n    color: #333333;\n}\nbutton[data-v-45ba5ed4] {\n    background-color: #b2dfdb;\n    color: #000;\n}\nImage[data-v-45ba5ed4] {\n    horizontal-align: left;\n    text-align: left;\n    vertical-align: left;\n    width: 100;\n    border-radius: 100;\n}\n.bold[data-v-45ba5ed4] {\n    font-weight: bold;\n}\n", ""]);
+exports.push([module.i, "\nPage[data-v-45ba5ed4]{\n    background: #24292e;\n    color: white;\n}\nFlexboxLayout[data-v-45ba5ed4] {\n    horizontal-align: center;\n    vertical-align: center;\n}\nStackLayout[data-v-45ba5ed4] {\n    width: 90%;\n    height: 95%;\n}\nActionBar[data-v-45ba5ed4] {\n    background-color: #ffcdd2;\n    color: #000000;\n}\n.message[data-v-45ba5ed4] {\n    /* text-align: center; */\n    font-size: 20;\n    color: #FFF;\n}\nbutton[data-v-45ba5ed4] {\n    background-color: #b2dfdb;\n    color: #000;\n}\nImage[data-v-45ba5ed4] {\n    horizontal-align: left;\n    text-align: left;\n    vertical-align: left;\n    width: 100;\n    border-radius: 100;\n}\n.bold[data-v-45ba5ed4] {\n    font-weight: bold;\n}\n", ""]);
 
 // exports
 
@@ -385,10 +387,17 @@ var render = function() {
               _c(
                 "StackLayout",
                 [
-                  _c("Label", { staticClass: "message" }, [
-                    _vm._v(" " + _vm._s(_vm.page) + " / 9 ")
-                  ]),
+                  _c("Progress", {
+                    attrs: { value: _vm.page, maxValue: _vm.maxpages }
+                  }),
                   _c("TextField", {
+                    staticStyle: {
+                      width: "90%",
+                      background: "#181b1f",
+                      borderRadius: "20",
+                      paddingLeft: "20",
+                      margin: "10px 0"
+                    },
                     attrs: {
                       hint: "Enter a subreddit",
                       returnKeyType: "done",
@@ -403,12 +412,22 @@ var render = function() {
                       ]
                     }
                   }),
-                  _c("button", { on: { tap: _vm.nextpost } }, [
-                    _vm._v(" Next ")
-                  ]),
-                  _c("button", { on: { tap: _vm.previouspost } }, [
-                    _vm._v(" Previous ")
-                  ]),
+                  _c(
+                    "button",
+                    {
+                      staticStyle: { width: "90%" },
+                      on: { tap: _vm.nextpost }
+                    },
+                    [_vm._v(" Next ")]
+                  ),
+                  _c(
+                    "button",
+                    {
+                      staticStyle: { width: "90%", marginBottom: "10" },
+                      on: { tap: _vm.previouspost }
+                    },
+                    [_vm._v(" Previous ")]
+                  ),
                   _vm.dataverified
                     ? _c(
                         "StackLayout",

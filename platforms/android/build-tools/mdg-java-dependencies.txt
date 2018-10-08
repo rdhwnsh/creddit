@@ -20,4 +20,3 @@ C:\Users\ridhwanshah\Documents\GitHub\creddit\platforms\android\app\build\explod
 C:\Users\ridhwanshah\Documents\GitHub\creddit\platforms\android\app\build\exploded-dependencies\7\classes.jar
 C:\Users\ridhwanshah\Documents\GitHub\creddit\platforms\android\app\build\exploded-dependencies\8\classes.jar
 C:\Users\ridhwanshah\Documents\GitHub\creddit\platforms\android\app\build\exploded-dependencies\9\engine.io-client-1.0.0.jar
-C:\Users\ridhwanshah\Documents\GitHub\creddit\platforms\android\app\build\intermediates\classes\debug

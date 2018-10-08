@@ -56,7 +56,7 @@
                 title: "",
                 img: "",
                 maxpages: "",
-                appversion: "v1.5.1r2",
+                appversion: "v1.6.0",
                 dataverified: false,
             }
         },

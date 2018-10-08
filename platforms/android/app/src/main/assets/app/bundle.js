@@ -217,7 +217,7 @@ var utilityModule = __webpack_require__("../node_modules/tns-core-modules/utils/
       title: "",
       img: "",
       maxpages: "",
-      appversion: "v1.5.1r2",
+      appversion: "v1.6.0",
       dataverified: false
     };
   },

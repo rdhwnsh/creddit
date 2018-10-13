@@ -7,4 +7,4 @@ It is a reddit client made using Nativescript + Vue
 It stands for cloned reddit but shorterned so its c-reddit but then now it is creddit
 
 # Download
-Go to the releases tab or navigate to https://github.com/ridhwanshah/creddit/blob/master/platforms/android/app/build/outputs/apk/debug/app-debug.apk?raw=true and press download and install as per normal (enable unknown sources)
+This app is not available to download for now!
